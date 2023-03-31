@@ -1,0 +1,26 @@
+---
+- hosts: 
+    - server
+  become: true
+  tasks:
+    - name: Check if pm2 is already installed
+      shell: pm2 -v
+      register: pm2_version
+      ignore_errors: true
+
+    - name: Install pm2 if not installed
+      become: true
+      shell: sudo npm install pm2 -g
+      when: pm2_version.rc != 0
+    
+    # - name: Copy ecosystem config
+    #   become: true
+    #   template:
+    #     src: ecosystem.config.js
+    #     dest: /path/to/project/folder/ecosystem.config.js
+
+    # - name: Start pm2 with ecosystem.config.js file
+    #   shell: pm2 start ecosystem.config.js
+    #   become: true
+    #   args:
+    #     chdir: /path/to/project/folder

@@ -1,0 +1,31 @@
+---
+- hosts: 
+    - server
+  become: true
+  tasks:
+    - name: Check if Node.js and npm is installed
+      stat: "path=/usr/bin/node"
+      register: node
+
+    - name: Install nodejs & npm
+      become: true
+      apt:
+        update_cache: yes
+        name: curl
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+      when: not node.stat.exists
+
+    - name: Install Node.js v16.x
+      become: true
+      shell: curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash - && sudo apt-get install -y nodejs
+      args:
+        executable: /bin/bash
+      when: not node.stat.exists
+    
+    - debug:
+        var: node
+
+
+
+
